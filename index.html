@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ventas - Sandwichería</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <script defer src="app.js"></script>
+</head>
+
+
+<body>
+  <div class="app">
+
+    <!-- =========================
+         PANTALLA 1: HOY
+    ========================== -->
+    <section id="screen-hoy">
+
+      <header class="topbar">
+        <h1 class="title">Sandwichería</h1>
+        <div class="date" id="dateText">--</div>
+      </header>
+
+      <section class="card">
+        <p class="kpiLabel">Total del día</p>
+        <p class="kpiValue" id="totalDia">$0</p>
+
+        <button type="button" class="btn" id="btnNuevaVenta">+ Nueva venta</button>
+      </section>
+
+      <section class="card">
+        <div class="chips">
+          <div class="chip">
+            <p class="label">Ventas</p>
+            <p class="value" id="kpiVentas">0</p>
+          </div>
+          <div class="chip">
+            <p class="label">Items</p>
+            <p class="value" id="kpiItems">0</p>
+          </div>
+          <div class="chip">
+            <p class="label">Promedio</p>
+            <p class="value" id="kpiPromedio">$0</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="sectionTitle">Últimas ventas</p>
+        <ul class="list" id="listaVentas"></ul>
+      </section>
+
+      <section class="footerActions">
+        <button type="button" class="btnSecondary" id="btnExportCSV">Exportar CSV</button>
+        <button type="button" class="btnSecondary" id="btnNewDay">Nuevo día</button>
+      </section>
+
+      <section class="footerActions" style="margin-top:10px;">
+        <button type="button" class="btnSecondary" id="btnCierre">Cierre de caja</button>
+        <button type="button" class="btnSecondary" id="btnProductos">Productos</button>
+      </section>
+
+    </section>
+
+
+    <!-- =========================
+         PANTALLA 2: NUEVA VENTA
+    ========================== -->
+    <section id="screen-venta" hidden>
+
+      <header class="topbar">
+        <h1 class="title">Nueva venta</h1>
+        <div class="date" id="ventaInfo">Ticket</div>
+      </header>
+
+      <section class="card">
+        <p class="kpiLabel">Total del ticket</p>
+        <p class="kpiValue" id="totalTicket">$0</p>
+
+        <section class="footerActions">
+          <button type="button" class="btnSecondary" id="btnCancelarVenta">Cancelar</button>
+          <button type="button" class="btnSecondary" id="btnGuardarVenta" disabled>Guardar</button>
+        </section>
+      </section>
+
+      <section class="card">
+        <p class="sectionTitle">Agregar producto</p>
+
+        <div class="formGrid">
+          <label class="field">
+            <span class="fieldLabel">Categoría</span>
+            <select id="selCategoria" class="control">
+              <option value="">Elegí…</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Producto</span>
+            <select id="selProducto" class="control">
+              <option value="">Elegí…</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Cantidad</span>
+            <input id="inpCantidad" class="control" type="number" min="1" value="1" />
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Tipo de precio</span>
+            <select id="selPrecio" class="control">
+              <option value="unidad">Unidad</option>
+              <option value="docena">Docena</option>
+            </select>
+          </label>
+        </div>
+
+        <button type="button" class="btn" id="btnAgregarItem" disabled>+ Agregar al ticket</button>
+      </section>
+
+      <section class="card">
+        <p class="sectionTitle">Items del ticket</p>
+        <ul class="list" id="listaItems"></ul>
+        <p class="helper" id="hintVacio">Tip: agregá productos y después tocá “Guardar”.</p>
+      </section>
+
+    </section>
+
+
+    <!-- =========================
+         PANTALLA 3: PRODUCTOS (CRUD)
+    ========================== -->
+    <section id="screen-products" hidden>
+
+      <header class="topbar">
+        <h1 class="title">Productos</h1>
+        <div class="date" id="productsInfo">Admin</div>
+      </header>
+
+      <section class="card">
+        <button type="button" class="btnSecondary" id="btnVolverDesdeProductos">Volver</button>
+      </section>
+
+      <section class="card">
+        <p class="sectionTitle">Crear / editar producto</p>
+
+        <div class="formGrid">
+          <label class="field">
+            <span class="fieldLabel">Categoría</span>
+            <input id="prodCategory" class="control" list="categoriesList" placeholder="Ej: Migas / Bebidas" />
+            <datalist id="categoriesList"></datalist>
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Nombre</span>
+            <input id="prodName" class="control" placeholder="Ej: Jamón y queso (unidad)" />
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Precio unidad</span>
+            <input id="prodPriceUnidad" class="control" type="number" min="0" step="1" placeholder="Ej: 1500" />
+          </label>
+
+          <label class="field">
+            <span class="fieldLabel">Precio docena (opcional)</span>
+            <input id="prodPriceDocena" class="control" type="number" min="0" step="1" placeholder="Ej: 15000" />
+          </label>
+        </div>
+
+        <div class="footerActions" style="margin-top:10px;">
+          <button type="button" class="btnSecondary" id="btnCancelProductEdit" disabled>Cancelar edición</button>
+          <button type="button" class="btnSecondary" id="btnSaveProduct">Guardar producto</button>
+        </div>
+
+        <p class="helper" id="prodHint">
+          Tip: si querés “docena” como producto aparte, creá 2 productos (unidad y docena) con nombres distintos.
+        </p>
+      </section>
+
+      <section class="card">
+        <p class="sectionTitle">Lista de productos</p>
+        <ul class="list" id="listaProductos"></ul>
+        <p class="helper" id="hintProductosVacio">No hay productos. Cargá el primero arriba.</p>
+      </section>
+
+    </section>
+
+  </div>
+</body>
+</html>

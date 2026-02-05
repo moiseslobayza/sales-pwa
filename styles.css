@@ -1,0 +1,269 @@
+/* =========================
+   Base (modo app)
+========================= */
+:root{
+  --bg: #fffbe6;     /* amarillo claro */
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --dark: #111827;
+  --soft: #fafafa;
+}
+
+*{ box-sizing: border-box; }
+
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app{
+  max-width: 430px;           /* celu */
+  margin: 0 auto;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+/* =========================
+   Topbar
+========================= */
+.topbar{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 4px 14px;
+}
+
+.title{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.date{
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* =========================
+   Cards
+========================= */
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+/* KPI */
+.kpiLabel{
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.kpiValue{
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+}
+
+/* =========================
+   Buttons
+========================= */
+.btn{
+  width: 100%;
+  padding: 16px 14px;        /* tamaño dedo */
+  font-size: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--dark);
+  color: white;
+  font-weight: 800;
+  margin-top: 12px;
+  cursor: pointer;
+}
+.btn:active{ transform: scale(0.99); }
+
+.footerActions{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btnSecondary{
+  width: 100%;
+  padding: 14px 12px;
+  font-size: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+.btnSecondary:active{ transform: scale(0.99); }
+
+/* Disabled */
+button:disabled,
+.btn:disabled,
+.btnSecondary:disabled{
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Botones compactos para acciones en listas (+ / - / ✕ / Editar / Borrar) */
+.miniBtn{
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: white;
+  font-weight: 800;
+  cursor: pointer;
+  line-height: 1;
+}
+.miniBtn:active{ transform: scale(0.99); }
+
+.miniBtn.danger{
+  border-color: #f1c3c3;
+  background: #fff4f4;
+}
+
+/* =========================
+   Chips (Pantalla HOY)
+========================= */
+.chips{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.chip{
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  background: var(--soft);
+}
+.chip .label{
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+.chip .value{
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* =========================
+   Lists (Ventas / Items / Productos)
+========================= */
+.sectionTitle{
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+.list li{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
+  gap: 10px;
+}
+.list li > span{
+  flex: 1;
+  min-width: 0;
+}
+
+/* bloque derecho con controles */
+.rightControls{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.time{
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* badge opcional */
+.badge{
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--soft);
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* =========================
+   Form (Nueva venta / Productos)
+========================= */
+.formGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel{
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.control{
+  width: 100%;
+  padding: 14px 12px;
+  font-size: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: white;
+  outline: none;
+}
+.control:focus{
+  border-color: #cbd5e1;
+}
+
+.helper{
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* number spinners */
+input[type="number"]{
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,5 +1,5 @@
 {
-  "id": "/",
+  "id": "./",
   "name": "Ventas Sandwichería",
   "short_name": "Ventas",
   "description": "Registro de ventas (tickets) y administración de productos para sandwichería. Funciona offline.",

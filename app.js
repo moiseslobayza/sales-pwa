@@ -3,6 +3,7 @@
    - 3 pantallas: HOY / NUEVA VENTA / PRODUCTOS (CRUD)
    - Productos editables desde UI (sin tocar código)
    - Botones mini en listas (+/−/✕ y Editar/Borrar)
+   - Backup productos: Exportar / Importar (JSON)
 ========================================================= */
 
 const STORAGE_KEY = "sandwicheria_store_v2";
@@ -135,6 +136,11 @@ const el = {
   btnCancelProductEdit: document.getElementById("btnCancelProductEdit"),
   listaProductos: document.getElementById("listaProductos"),
   hintProductosVacio: document.getElementById("hintProductosVacio"),
+
+  // BACKUP productos
+  btnExportProductos: document.getElementById("btnExportProductos"),
+  btnImportProductos: document.getElementById("btnImportProductos"),
+  fileImportProductos: document.getElementById("fileImportProductos"),
 };
 
 /* -------------------------
@@ -224,11 +230,13 @@ function getCategories() {
 function refreshProductDependentUI() {
   // datalist categorías (admin)
   const cats = getCategories();
-  el.categoriesList.innerHTML = "";
-  for (const c of cats) {
-    const opt = document.createElement("option");
-    opt.value = c;
-    el.categoriesList.appendChild(opt);
+  if (el.categoriesList) {
+    el.categoriesList.innerHTML = "";
+    for (const c of cats) {
+      const opt = document.createElement("option");
+      opt.value = c;
+      el.categoriesList.appendChild(opt);
+    }
   }
 
   // selector categorías (venta)
@@ -317,7 +325,7 @@ function resetVentaForm() {
 }
 
 function productsByCategory(category) {
-  return getProducts().filter(p => p.category === category);
+  return getProducts().filter((p) => p.category === category);
 }
 
 function onCategoryChange() {
@@ -338,11 +346,11 @@ function onCategoryChange() {
 
 function getSelectedProduct() {
   const id = el.selProducto.value;
-  return getProducts().find(p => p.id === id) || null;
+  return getProducts().find((p) => p.id === id) || null;
 }
 
 function setDocenaEnabled(enabled) {
-  const optDocena = Array.from(el.selPrecio.options).find(o => o.value === "docena");
+  const optDocena = Array.from(el.selPrecio.options).find((o) => o.value === "docena");
   if (optDocena) optDocena.disabled = !enabled;
   if (!enabled && el.selPrecio.value === "docena") el.selPrecio.value = "unidad";
 }
@@ -375,7 +383,7 @@ function addItemToCart() {
     return;
   }
 
-  const existing = cart.find(it => it.productId === product.id && it.priceType === priceType);
+  const existing = cart.find((it) => it.productId === product.id && it.priceType === priceType);
   if (existing) {
     existing.qty += qty;
     existing.lineTotal = existing.qty * existing.unitPrice;
@@ -444,7 +452,7 @@ function renderCart() {
     btnDel.textContent = "✕";
     btnDel.title = "Borrar ítem";
     btnDel.addEventListener("click", () => {
-      cart = cart.filter(x => x.id !== it.id);
+      cart = cart.filter((x) => x.id !== it.id);
       renderCart();
     });
 
@@ -471,7 +479,7 @@ function saveSale() {
   const sale = {
     id: uid("s"),
     ts,
-    items: cart.map(it => ({ ...it })),
+    items: cart.map((it) => ({ ...it })),
     total: cartTotal(),
   };
 
@@ -503,8 +511,16 @@ function exportCSV() {
   }
 
   const headers = [
-    "date","time","sale_id","category","product","price_type","qty",
-    "unit_price","line_total","sale_total"
+    "date",
+    "time",
+    "sale_id",
+    "category",
+    "product",
+    "price_type",
+    "qty",
+    "unit_price",
+    "line_total",
+    "sale_total",
   ];
   const rows = [headers.join(";")];
 
@@ -512,9 +528,17 @@ function exportCSV() {
     const time = formatTime(s.ts);
     for (const it of (s.items || [])) {
       const row = [
-        day.date, time, s.id, it.category, it.name, it.priceType,
-        it.qty, it.unitPrice, it.lineTotal, s.total
-      ].map(v => `"${String(v).replaceAll('"', '""')}"`);
+        day.date,
+        time,
+        s.id,
+        it.category,
+        it.name,
+        it.priceType,
+        it.qty,
+        it.unitPrice,
+        it.lineTotal,
+        s.total,
+      ].map((v) => `"${String(v).replaceAll('"', '""')}"`);
       rows.push(row.join(";"));
     }
   }
@@ -552,10 +576,10 @@ function cierreCaja() {
 
   alert(
     `Cierre de caja (hoy)\n` +
-    `Ventas: ${ventas}\n` +
-    `Items: ${itemsQty}\n` +
-    `Total: ${money(total)}\n` +
-    `Promedio: ${money(promedio)}`
+      `Ventas: ${ventas}\n` +
+      `Items: ${itemsQty}\n` +
+      `Total: ${money(total)}\n` +
+      `Promedio: ${money(promedio)}`
   );
 }
 
@@ -573,7 +597,7 @@ function resetProductForm() {
 }
 
 function startEditProduct(productId) {
-  const p = getProducts().find(x => x.id === productId);
+  const p = getProducts().find((x) => x.id === productId);
   if (!p) return;
 
   editingProductId = p.id;
@@ -588,13 +612,13 @@ function startEditProduct(productId) {
 }
 
 function deleteProduct(productId) {
-  const p = getProducts().find(x => x.id === productId);
+  const p = getProducts().find((x) => x.id === productId);
   if (!p) return;
 
   const ok = confirm(`¿Eliminar "${p.name}"?`);
   if (!ok) return;
 
-  const next = getProducts().filter(x => x.id !== productId);
+  const next = getProducts().filter((x) => x.id !== productId);
   setProducts(next);
 
   if (editingProductId === productId) resetProductForm();
@@ -620,7 +644,7 @@ function saveProductFromForm() {
   };
 
   if (editingProductId) {
-    const idx = products.findIndex(p => p.id === editingProductId);
+    const idx = products.findIndex((p) => p.id === editingProductId);
     if (idx === -1) return alert("No se encontró el producto para editar.");
     products[idx] = { ...products[idx], ...payload };
   } else {
@@ -678,6 +702,58 @@ function renderProductsList() {
 }
 
 /* -------------------------
+   BACKUP Productos (Export / Import)
+------------------------- */
+function downloadTextFile(filename, text, mime = "application/json") {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportProductosJSON() {
+  const data = {
+    schema: "products-v1",
+    exportedAt: new Date().toISOString(),
+    products: getProducts(),
+  };
+  const yyyy = new Date().toISOString().slice(0, 10);
+  downloadTextFile(`productos-${yyyy}.json`, JSON.stringify(data, null, 2));
+}
+
+function validateImportedProducts(products) {
+  if (!Array.isArray(products)) throw new Error("El archivo no contiene un array de productos.");
+
+  for (const p of products) {
+    if (!p || typeof p !== "object") throw new Error("Producto inválido.");
+    if (!p.id || !p.name || !p.category) throw new Error("Faltan campos (id, name, category).");
+    if (!p.prices || typeof p.prices !== "object") throw new Error("Falta prices{}.");
+
+    const unidad = Number(p.prices.unidad || 0);
+    const docena = p.prices.docena == null ? 0 : Number(p.prices.docena);
+
+    if (!unidad || unidad <= 0) throw new Error(`Precio unidad inválido en: ${p.name}`);
+    if (isNaN(docena) || docena < 0) throw new Error(`Precio docena inválido en: ${p.name}`);
+  }
+}
+
+async function importProductosJSON(file) {
+  const text = await file.text();
+  const parsed = JSON.parse(text);
+
+  const products = Array.isArray(parsed) ? parsed : parsed.products;
+  validateImportedProducts(products);
+
+  setProducts(products);
+  alert("Productos importados OK ✅");
+}
+
+/* -------------------------
    Eventos
 ------------------------- */
 function bindEvents() {
@@ -717,6 +793,28 @@ function bindEvents() {
 
   el.btnSaveProduct.addEventListener("click", saveProductFromForm);
   el.btnCancelProductEdit.addEventListener("click", resetProductForm);
+
+  // BACKUP Productos
+  if (el.btnExportProductos) {
+    el.btnExportProductos.addEventListener("click", exportProductosJSON);
+  }
+
+  if (el.btnImportProductos && el.fileImportProductos) {
+    el.btnImportProductos.addEventListener("click", () => el.fileImportProductos.click());
+
+    el.fileImportProductos.addEventListener("change", async () => {
+      const file = el.fileImportProductos.files?.[0];
+      if (!file) return;
+
+      try {
+        await importProductosJSON(file);
+      } catch (e) {
+        alert("No pude importar: " + (e?.message || "archivo inválido"));
+      } finally {
+        el.fileImportProductos.value = "";
+      }
+    });
+  }
 }
 
 /* -------------------------
